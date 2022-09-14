@@ -557,7 +557,10 @@ function img_psl = psl_calc(img,res,sensit,lat,ran)
     row=size(data,1);
     col=size(data,2);
     %PSLtotal=0;
-    psl = (h*(10^(L/2))*((data./G).^2)*(Res/100)^2);
+    %you guessed it right. I donno where i found this expression
+    %psl = (h*(10^(L/2))*((data./G).^2)*(Res/100)^2);
+    %here is teh correct expression
+    psl = ((Res/100)^2) * (4000/S) * 10.^(L * ((data./G)-0.5));
     PSLnew = psl;
     %PSLnew = psl/(0.65498+ 0.18075*exp(-13/35)+0.18225*exp(-13/264));
 %     for i=1:row
@@ -894,8 +897,9 @@ function point_psl = psl_calc_point(data,Res,sensit,lat,ran)
     S = sensit;
     G = (2^ran) - 1;
     h = 3.5;
-    PSL=double(h*(10^(L/2))*((data/G)^2)*(Res/100)^2);
-    PSLnew= PSL/(0.65498+ 0.18075*exp(-13/35)+0.18225*exp(-13/264));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+    %PSL=double(h*(10^(L/2))*((data/G)^2)*(Res/100)^2);
+    %PSLnew= PSL/(0.65498+ 0.18075*exp(-13/35)+0.18225*exp(-13/264));    
+    PSLnew=double(((Res/100)^2) * (4000/S) * 10.^(L * ((data./G)-0.5)));
     point_psl = PSLnew;
 end
 

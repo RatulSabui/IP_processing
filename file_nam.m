@@ -1,4 +1,4 @@
-function [first_scan,last_scan,file_list_run,sav_nam] = file_nam(directory,run_num)
+function [first_scan,last_scan,file_list_run,sav_nam] = file_nam(directory,run_num,run_num2,ext)
     
     dir_list = dir(directory);
     file_list = string(zeros(1,length(dir_list)));
@@ -9,7 +9,7 @@ function [first_scan,last_scan,file_list_run,sav_nam] = file_nam(directory,run_n
         file_list(i) = name;
     end
     % selecting the names with tiff
-    TF = contains(file_list,'.tif');
+    TF = contains(file_list,ext);
     file_list = file_list(TF);
     %TF_sc1 = contains(file_list,'_sc1');
     %file_list_sc1 = file_list(TF_sc1);
@@ -20,6 +20,6 @@ function [first_scan,last_scan,file_list_run,sav_nam] = file_nam(directory,run_n
     end
     last_scan = file_list_run(end);
     first_scan = file_list_run(1);
-    sav_nam = erase(first_scan,["_sc1",".tif"]);
+    sav_nam = erase(first_scan,[run_num2,ext]);
     sav_nam = strcat(sav_nam,".csv");
 end

@@ -10,11 +10,15 @@ clear;
 
 tstart = tic;
 
-direc = "../../particle_exp_round2/4Oct2021/";
+%direc = "../../particle_exp_round2/4Oct2021/";
+direc = "../../../../electron_data/other_data/TP_trials/TP03072022/";
 %img = 'run1_50_4000_sc1-[Phosphor].tif';
-run_name = 'run1_';
+%imext = '.tif';
+imext = '.gel';
+run_name = 'trial1_';
+run_name2 = '_scan1';
 
-[scan1,scan_last,total_scan,save_name] = file_nam(direc,run_name);
+[scan1,scan_last,total_scan,save_name] = file_nam(direc,run_name,run_name2,imext);
 %direc = fig_dir;
 folder =  direc;
 %direc = "elec_data_ip_esm_angdist"
@@ -27,18 +31,20 @@ latitude = 5; %latitude of the reader
 dyn_range =  16; %16 bit dynamic range of the data
 
 
-en_array1 = [50:50:700 800:100:1200 1350 1500];
-calib_file1 = strcat(direc,'round2_mag1_final.csv');
-calib_file2 = strcat(direc,'round2_mag2_final.csv');
+%en_array1 = [50:50:700 800:100:1200 1350 1500];
+en_array1 = [75 100:50:700 800:100:1200 1350 1500];
+%calib_file1 = strcat(direc,'round2_mag1_final.csv');
+%calib_file2 = strcat(direc,'round2_mag1_final.csv');
+calib_file2 = strcat(direc,'poincare_ip_mag1_2.csv');
 
 coms_en_ax_total_arr = [en_array1;en_array1;en_array1];
-coms_file_total = [calib_file1;calib_file2;calib_file2];
+coms_file_total = [calib_file2;calib_file2;calib_file2];
 %front is 45 deg, side is 90 deg and back is 135 deg
 
 name_total_arr = ["135","90","45"];
 ip_resp_file = "";
 
-num_ESM = 3;
+num_ESM = 3; 
 is_ang_dist = 1;
 %the space on the ip before the magnet begins (in cm)
 %the calibration file has its zero at the start  of the magnet 
@@ -55,8 +61,18 @@ gap = 1.5;
 %in imageJ x-axis is counted from left to right; y-axis is counted from top to bottom
 
 
-back135_1 = [47,1779];
-back135_2 = [3009,2132];
+% back135_1 = [47,1779];
+% back135_2 = [3009,2132];
+% 
+% side90_1 = [44,2312];
+% side90_2 = [3068,2779];
+% 
+% front45_1 = [49,2911];
+% front45_2 = [2998,3360];
+
+
+back135_1 = [162,768];
+back135_2 = [3009,];
 
 side90_1 = [44,2312];
 side90_2 = [3068,2779];
@@ -118,10 +134,16 @@ isSat_cell = cell(length(total_scan),num_ESM);
 for i = 1:length(total_scan)
     tim = tic;
     disp('reading file')
-    img_fil2 = Tiff(total_scan(i));
-    %cl = class(img_fil)
-    %getTag(img_fil2,'YResolution');
-    img = read(img_fil2);
+    if (strcmp(imext,".tif"))
+        img_fil2 = Tiff(total_scan(i));
+        %cl = class(img_fil)
+        %getTag(img_fil2,'YResolution');
+        img = read(img_fil2);
+    end
+    if(strcmp(imext,".gel"))
+        total_scan(i)
+        img = imread(total_scan(i));
+    end
     disp("file read")
     toc(tim)
     [axis_arr,trend_arr,isSatarr,satidx_arr,inv_arr] = img_proc(scan_num,img,total_crop,microns_per_pixel,num_ESM,sensit,latitude,dyn_range,trend_width,gap,inv_arr); 
@@ -185,6 +207,7 @@ dat_len_max = length(cell2mat(final_dat_cell(1,1)));
 final_dat_mat = zeros(dat_len_max,num_ESM*3);
 csv_ind_names = string.empty;
 
+%just naming the columns before printing
 for i = 1:num_ESM
     for j = 1:3
         %3*(i-1)+j

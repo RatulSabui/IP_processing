@@ -4,7 +4,7 @@
 function [axis,trend] = trendgen_ESM(img,wid,invert,res,gap)
     %imshow(img,[])
     if invert==1
-        img  = imcrop(img,180);
+        img  = imrotate(img,180);
     end
     [rows columns] = size(img);
     row_sum = sum(img,2);

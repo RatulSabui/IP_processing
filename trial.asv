@@ -26,7 +26,7 @@ dyn_range =  16; %16 bit dynamic range of the data
 
 en_array1 = [50:50:700 800:100:1200 1350 1500];
 calib_file1 = strcat(direc,'round2_mag1_final.csv');
-calib_file2 = strcat(direc,'round2_mag2_final.csv');
+calib_file2 = strcat(direc,'round2_mag1_final.csv');
 %calib_file1 = strcat(direc,'height_mag1_1.csv');
 %calib_file2 = strcat(direc,'height_mag1_1.csv');
 coms_en_ax_total_arr = [en_array1;en_array1;en_array1];
@@ -107,7 +107,6 @@ tim = tic;
 %reading the calibration files and doing performing the calibration
 %this takes values from the comsol files
 calib_cell = cell(2,num_ESM);
-temp_tim = tim;
 for i =1:num_ESM
     data_elec = readtable(coms_file_total(i,:));
     data_en_xax = coms_en_ax_total_arr(i,:);
@@ -115,9 +114,6 @@ for i =1:num_ESM
     %plot(pos_val,en_val)
     calib_cell(1,i) = {en_val};
     calib_cell(2,i) = {pos_val};
-    disp("1 Callibration file processed")
-    toc(temp_tim);
-    temp_tim = tic;
 end
 
 disp("Callibration files processed")
@@ -180,7 +176,9 @@ for i  = 1:num_ESM
     calib_length = length(temp_en_ar);
     temp_trend_ar = temp_trend_ar(1:calib_length);
     %plot(temp_trend_ar)
-    temp_trend_ar = jacobian(temp_en_ar,temp_calib_pos_ar,temp_trend_ar);
+    %figure;
+    %plot(temp_calib_pos_ar,temp_en_ar)
+    temp_trend_ar = jacobian(temp_en_ar,temp_calib_pos_ar,temp_trend_ar,direc,run_name);
     %plot(temp_trend_ar)
     temp_en_ar = temp_en_ar(1:end-1);
     temp_trend_ar = eff_corr(temp_en_ar,temp_trend_ar);
@@ -188,7 +186,7 @@ for i  = 1:num_ESM
     temp_norm_ar = temp_trend_ar/(max(temp_trend_ar));
 
     
-    plot(temp_en_ar,temp_trend_ar)
+    %plot(temp_en_ar,temp_trend_ar)
     final_dat_cell(2,i) = {temp_trend_ar};
     final_dat_cell(1,i) = {temp_en_ar};
     final_dat_cell(3,i) = {temp_norm_ar};
@@ -522,8 +520,7 @@ function [axis,trend] = trendgen_ESM(img,wid,invert,res,gap)
     trend = trend(1:end-1);
     %length(trend)
     %length(axis)
-    figure
-    plot(axis,trend)
+    %plot(axis,trend)
 end
 
 %% determines the trend of the angular distribution
@@ -551,7 +548,6 @@ end
 %% Calculates the PSL value of each pixel in the image
 function img_psl = psl_calc(img,res,sensit,lat,ran)
     %imshow(img,[])
-    %imhist(img)
     %set(gca,'YScale','log')
     data = double(img);
     Res = res;
@@ -562,12 +558,11 @@ function img_psl = psl_calc(img,res,sensit,lat,ran)
     row=size(data,1);
     col=size(data,2);
     %PSLtotal=0;
-    %you guessed it right. I donno where i found this expression
+    % so this is the value that I had read from the paper
     %psl = (h*(10^(L/2))*((data./G).^2)*(Res/100)^2);
-    %here is teh correct expression
+    %here is the real formula that had been used in the paper
     psl = ((Res/100)^2) * (4000/S) * 10.^(L * ((data./G)-0.5));
     PSLnew = psl;
-    %max(psl,[],'all')
     %PSLnew = psl/(0.65498+ 0.18075*exp(-13/35)+0.18225*exp(-13/264));
 %     for i=1:row
 %         for j =1:col
@@ -587,8 +582,10 @@ function img_psl = psl_calc(img,res,sensit,lat,ran)
 %         end
 %     end                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
     img_psl = PSLnew;
+    max(img_psl,[],'all')
     %imshow(img_psl,[])
     %imhist(img_psl)
+    %bleh
     %set(gca,'YScale','log')
     %fprintf("bleh")
 end
@@ -744,26 +741,32 @@ function filt_im = scan_line_rem(im)
     filt_im = filteredImage;
 end
 
-function dNdE = jacobian(en_vals,x_axis,dat)
+function dNdE = jacobian(en_vals,x_axis,dat,direc,run_name)
     %figure;
     %plot(x_axis)
     %figure
-    %plot(x_axis,dat);
-    figure;
+    %plot(en_vals,dat);
+    bleh
+    %x_axis = x_axis.*1000;
+    %figure;
     %plot(x_axis,en_vals)
     dx = diff(x_axis);
     dE = diff(en_vals);
-    dxdE = dx./dE;
+    dEdx = dE./dx;
     %figure;
-    %plot(en_vals(1:end-1),dxdE);
-
+    %plot(en_vals(1:end-1),dEdx);
+    %plot(x_axis(1:end-1),dEdx);
     %dEdx = dE./dx;
     %plot(en_vals(1:end-1),dxdE);
     %size(dxdE)
     %size(dat)
-    dNdE = dat(1:end-1).*dxdE;
-    %plot(en_vals(1:end-1),dNdE)
-
+    dNdE = dat(1:end-1)./dEdx;
+    plot(en_vals(1:end-1),dNdE)
+    save_name = 'jacob_temp';
+    col_names = ['x_axis','en_vals','dx','dE','dEdx','dNdE'];
+    col_array = [x_axis(1:end-1);en_vals(1:end-1);dx;dE;dEdx;dNdE];
+    temp = csv_wr(col_names, col_array, direc,run_name, save_name);
+    a = 0;
 end
 
 %idx is the array of locations 
@@ -803,7 +806,7 @@ function recon_sat = sat_rem(satscan,unsatscan,idx)
     %unsat_scan_sat = unsatscan(idx);
     %recon_sat = (unsatscan + c) / (1 + m);
     recon_sat = (unsatscan * (m+1)) + c;
-    plot(recon_sat)
+    %plot(recon_sat)
     hold on
     %recon = satscan;
     %recon_temp = recon;
@@ -859,7 +862,7 @@ function [axis_arr,trend_arr,isSatarr,satidx_arr,inv_arr] = img_proc(scan_num,im
     %disp("scan lines removed for one file");
     %inv_arr = zeros([1,ESM_num]);
     psl_im = psl_calc(img,res,sensit,lat,ran);
-    max(psl_im,[],'all')
+    %imshow(psl_im,[])
     %imshow(psl_im,[])
     toc(temp_fil_tic);
     disp("psl values calculated for one file");
@@ -875,7 +878,7 @@ function [axis_arr,trend_arr,isSatarr,satidx_arr,inv_arr] = img_proc(scan_num,im
         corner_index = corner_index + 1;
         rec_dat = [lef_corn;right_corn];
         cropim = ESM_crop(psl_im,rec_dat,res);
-        %imshow(cropim,[])
+        imshow(cropim,[])
         toc(temp_fil_tic);
         disp("image cropped");
         temp_fil_tic = tic;
@@ -886,8 +889,7 @@ function [axis_arr,trend_arr,isSatarr,satidx_arr,inv_arr] = img_proc(scan_num,im
         disp("image inverted");
         temp_fil_tic = tic;
         [axis,trend] = trendgen_ESM(cropim,wid,inv_arr(i),res,gap);
-        max(trend,[],'all')
-        plot(axis,trend)
+        %plot(axis,trend)
         toc(temp_fil_tic);
         disp("trend_generated");
         [isSat,idx] = isSat_ESM(trend,res,sensit,lat,ran);
@@ -905,9 +907,10 @@ function point_psl = psl_calc_point(data,Res,sensit,lat,ran)
     G = (2^ran) - 1;
     h = 3.5;
     %PSL=double(h*(10^(L/2))*((data/G)^2)*(Res/100)^2);
-    %PSLnew= PSL/(0.65498+ 0.18075*exp(-13/35)+0.18225*exp(-13/264));    
-    PSLnew=double(((Res/100)^2) * (4000/S) * 10.^(L * ((data./G)-0.5)));
-    point_psl = PSLnew;
+    %PSLnew= PSL/(0.65498+ 0.18075*exp(-13/35)+0.18225*exp(-13/264)); 
+    %here is the real formula that had been used in the paper
+    PSL = ((Res/100)^2) * (4000/S) * 10^(L * ((data/G)-0.5));
+    point_psl = PSL;
 end
 
 %corrects the ESM trace for the ip quantum efficiency
@@ -944,7 +947,15 @@ function trend_eff_corr = eff_corr(en_axis,trend)
     trend_eff_corr = trend./eff_calc;
 end
 
-
+function nil = csv_wr(col_names, col_array, direc,run_name, save_name)
+    %[m,n] = size(col_array);
+    col_array = col_array.';
+    %savetable = array2table(col_array,'VariableNames',col_names);
+    savetable = array2table(col_array);
+    save_name = direc + run_name + save_name + ".csv"; 
+    writetable(savetable,save_name);
+    nil = 0;
+end
 
 
 
