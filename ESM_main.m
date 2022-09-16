@@ -11,12 +11,13 @@ clear;
 tstart = tic;
 
 %direc = "../../particle_exp_round2/4Oct2021/";
-direc = "../../../../electron_data/other_data/TP_trials/TP03072022/";
+%direc = "../../../../electron_data/other_data/TP_trials/TP03072022/";
+direc = "../../../../electron_data/jet_data/20072022/"
 %img = 'run1_50_4000_sc1-[Phosphor].tif';
 %imext = '.tif';
 imext = '.gel';
-run_name = 'trial1_';
-run_name2 = '_scan1';
+run_name = 'run1_';
+run_name2 = '_sc1';
 
 [scan1,scan_last,total_scan,save_name] = file_nam(direc,run_name,run_name2,imext);
 %direc = fig_dir;
@@ -33,13 +34,14 @@ dyn_range =  16; %16 bit dynamic range of the data
 
 
 %en_array1 = [50:50:700 800:100:1200 1350 1500];
-en_array1 = [75 100:50:700 800:100:1200 1350 1500];
+en_array1 = [35 50 75 100:50:700 800:100:1200 1350 1500];
 %calib_file1 = strcat(direc,'round2_mag1_final.csv');
 %calib_file2 = strcat(direc,'round2_mag1_final.csv');
-calib_file2 = strcat(direc,'poincare_ip_mag1_2.csv');
+%calib_file2 = strcat(direc,'poincare_ip_mag1_2.csv');
+calib_file3 = strcat(direc,'ph_jet_mag1.csv');
 
 coms_en_ax_total_arr = [en_array1;en_array1;en_array1];
-coms_file_total = [calib_file2;calib_file2;calib_file2];
+coms_file_total = [calib_file3;calib_file3;calib_file3];
 %front is 45 deg, side is 90 deg and back is 135 deg
 
 name_total_arr = ["135","90","45"];
@@ -72,14 +74,14 @@ gap = 1.5;
 % front45_2 = [2998,3360];
 
 
-back135_1 = [162,768];
-back135_2 = [8220,1824];
+back135_1 = [186,774];
+back135_2 = [8220,1830];
 
-side90_1 = [162,768];
-side90_2 = [8220,1824];
+side90_1 = [186,774];
+side90_2 = [8220,1830];
 
-front45_1 = [162,768];
-front45_2 = [8220,1824];
+front45_1 = [186,774];
+front45_2 = [8220,1830];
 
 
 %creating this list just to go as an input to the img_proc function

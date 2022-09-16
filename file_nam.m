@@ -20,6 +20,7 @@ function [first_scan,last_scan,file_list_run,sav_nam] = file_nam(directory,run_n
     end
     last_scan = file_list_run(end);
     first_scan = file_list_run(1);
-    sav_nam = erase(first_scan,[run_num2,ext]);
+    sav_nam = erase(first_scan,[ext]);
+    sav_nam = erase(sav_nam,[run_num2]);
     sav_nam = strcat(sav_nam,".csv");
 end
