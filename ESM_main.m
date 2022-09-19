@@ -10,13 +10,13 @@ clear;
 
 tstart = tic;
 
-%direc = "../../particle_exp_round2/4Oct2021/";
+direc = "D:/exp_data/other_exp_data/06072022/";
 %direc = "../../../../electron_data/other_data/TP_trials/TP03072022/";
-direc = "../../../../electron_data/jet_data/20072022/"
+%direc = "../../../../electron_data/jet_data/20072022/"
 %img = 'run1_50_4000_sc1-[Phosphor].tif';
 %imext = '.tif';
 imext = '.gel';
-run_name = 'run1_';
+run_name = 'trial1_';
 run_name2 = '_sc1';
 
 [scan1,scan_last,total_scan,save_name] = file_nam(direc,run_name,run_name2,imext);
@@ -74,14 +74,14 @@ gap = 1.5;
 % front45_2 = [2998,3360];
 
 
-back135_1 = [186,774];
-back135_2 = [8220,1830];
+back135_1 = [162,762];
+back135_2 = [8232,1836];
 
-side90_1 = [186,774];
-side90_2 = [8220,1830];
+side90_1 = [162,762];
+side90_2 = [8232,1836];
 
-front45_1 = [186,774];
-front45_2 = [8220,1830];
+front45_1 = [162,762];
+front45_2 = [8232,1836];
 
 
 %creating this list just to go as an input to the img_proc function

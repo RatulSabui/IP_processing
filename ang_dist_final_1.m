@@ -282,7 +282,7 @@ end
 
 %% determines the trend of the angular distribution
 % takes in the cropped image
-function [axis,trend] = trendgen(img)
+function [axis,trend] = trendgen_angDist(img)
     hole_rad1 = 150;
     hole_rad2 = 220;
     siz = size(img);
