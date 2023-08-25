@@ -10,14 +10,16 @@ clear;
 
 tstart = tic;
 
-%direc = "../../particle_exp_round2/4Oct2021/";
-%direc = "../../../../electron_data/other_data/TP_trials/TP03072022/";
-direc = "../../../../electron_data/jet_data/20072022/"
+%direc = "D:/exp_data/particle_exp_rnd2/4Oct2021/";
+direc = "F:/experimental results/fusion_data/13082023/";
+%direc = "../../../../electron_data/jet_data/20072022/"
 %img = 'run1_50_4000_sc1-[Phosphor].tif';
 %imext = '.tif';
 imext = '.gel';
-run_name = 'run1_';
+run_name = 'run3_';
 run_name2 = '_sc1';
+
+dir_list = dir(direc);
 
 [scan1,scan_last,total_scan,save_name] = file_nam(direc,run_name,run_name2,imext);
 %direc = fig_dir;
@@ -38,7 +40,8 @@ en_array1 = [35 50 75 100:50:700 800:100:1200 1350 1500];
 %calib_file1 = strcat(direc,'round2_mag1_final.csv');
 %calib_file2 = strcat(direc,'round2_mag1_final.csv');
 %calib_file2 = strcat(direc,'poincare_ip_mag1_2.csv');
-calib_file3 = strcat(direc,'ph_jet_mag1.csv');
+%calib_file3 = strcat(direc,'ph_jet_mag1.csv');
+calib_file3 = strcat(direc,'round2_mag2_final');
 
 coms_en_ax_total_arr = [en_array1;en_array1;en_array1];
 coms_file_total = [calib_file3;calib_file3;calib_file3];
